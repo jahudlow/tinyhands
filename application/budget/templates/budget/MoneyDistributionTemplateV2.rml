@@ -47,7 +47,14 @@ z3c.rml docs can be found on their github page: https://github.com/zopefoundatio
             />    
         <paraStyle name="monthlyTotal"
             fontName="Helvetica-Bold"
-            fontSize="14"/>
+            fontSize="12"
+            spaceAfter="7"/>
+        <paraStyle name="Notes"
+            spaceAfter="7"/>
+        <paraStyle name="pastSent"
+            fontName="Helvetica-Bold"
+            fontSize="12"
+            spaceAfter="7"/>
         <blockTableStyle id="staffGrid">
             <lineStyle kind="grid"  colorName="black" thickness="1" start="0,0" stop="-5,-1" />
             <lineStyle kind="grid"  colorName="black" thickness="2" start="-4,0" stop="-4,-1" />
@@ -128,11 +135,18 @@ z3c.rml docs can be found on their github page: https://github.com/zopefoundatio
 
         <spacer length="5"/>
         <para style="monthlyTotal">
-            <b><u>Monthly Total:</u></b> <font color="#c00000">{{ total|intcomma }}</font>
+            <b><u>Monthly Distribution Subtotal:</u></b> <font color="#c00000">{{ total|intcomma }}</font>
         </para>
         <spacer length="10"/>
-        <para>
+        <para style="Notes">
             <b><u>Notes:</u></b> {{ notes }}
         </para>
+        {% if past_money_sent > 0 %}
+        	<para style="pastSent">
+        		<b><u>Past Month Sent Money Subtotal</u></b> <font color="#c00000">{{ past_money_sent|intcomma }}</font>
+        	</para>
+        	<para></para>
+        	<para>This total has already been sent and is not included in the monthly distribution.</para>
+        {% endif %}
     </story>
 </document>
