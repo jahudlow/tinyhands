@@ -27,17 +27,20 @@ def home(request):
 
 
 class AccountActivateClient(APIView):
+    MINIMUM_PASSWORD_LENGTH = 8
     def get(self, request, activation_key=None):
         account = Account.objects.get(activation_key=activation_key)
         if account and account.has_usable_password():
-            return HttpResponse("account_already_active/invalid_key")
+            return HttpResponse("invalid_key")
         serializer = AccountsSerializer(account)
         return Response(serializer.data)
 
     def post(self, request, activation_key=None):
         account = Account.objects.get(activation_key=activation_key)
         if account and account.has_usable_password():
-            return HttpResponse("account_already_active/invalid_key")
+            return HttpResponse("account_already_active")
+        elif 'password1' not in request.data or 'password2' not in request.data or len(request.data['password1']) < AccountActivateClient.MINIMUM_PASSWORD_LENGTH:
+            return HttpResponse("password_too_short")
         elif request.data['password1'] != request.data['password2']:
             return HttpResponse("unmatching_passwords")
         else:
@@ -70,11 +73,13 @@ def password_reset(request):
         account = Account.objects.filter(email=email).first()
         if not account:
             return Response({"message": "An account with that email was not found!"}, HTTP_404_NOT_FOUND)
-
-        # Set unusable password and Generate new activation key
-        account.set_unusable_password()
-        account.activation_key = make_activation_key()
-        account.save()
+        
+        if account.has_usable_password():
+            # Set unusable password and Generate new activation key
+            print('In reset')
+            account.set_unusable_password()
+            account.activation_key = make_activation_key()
+            account.save()
 
         # Send an activation email to the email
         account.send_activation_email('reset')
