@@ -19,6 +19,7 @@ class Address2Field(CharField):
     def validate(self, value):
         super(Address2Field, self).validate(value)
         # See comment above.
+        # extra comment
         if value and not Address2.objects.filter(name=value).exists():
             raise ValidationError("%(value)s is not a valid Address2.",
                                   params={'value': value})
